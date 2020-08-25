@@ -1,0 +1,122 @@
+<html>
+<head>
+<script>
+    var inProgress = false;
+    var startTime;
+    var endTime;
+
+    var offColour = "#202020";
+    var goodColour = "whitesmoke";
+    var badColour = "#202020";
+
+    var hasWon = false;
+
+    function Clamp(value, min, max)
+    {
+        return Math.min(max, Math.max(value, min))
+    }
+
+    function SetAllColor(color)
+    {
+        var elements = document.getElementsByClassName("tick_element");
+        var numElements = elements.length;
+        for (var eIdx = 0; eIdx < numElements; ++eIdx)
+        {
+            elements[eIdx].style.backgroundColor = color;
+        }
+    }
+
+    function UpdateColoursBasedOnTime(elapsedTime, isEnd)
+    {
+        var targetElapsedTime = 404;
+        var offFromTarget = Math.abs(targetElapsedTime - elapsedTime);
+        hasWon = isEnd && (offFromTarget < 2);
+
+        var elements = document.getElementsByClassName("tick_element");
+        var numElements = elements.length;
+
+        var offValue = offFromTarget * 0.01;
+        var indexBad = Clamp(Math.round(offValue * numElements), 0, numElements);
+
+        for (var eIdx = 0; eIdx < numElements; ++eIdx)
+        {
+            var color = (hasWon ? goodColour : ((eIdx < indexBad) ? badColour : goodColour));
+            elements[eIdx].style.backgroundColor = color;
+        }
+
+        if (isEnd && hasWon)
+        {
+            document.getElementById("time_div").innerHTML = "404ms";
+        }
+        else
+        {
+            document.getElementById("time_div").innerHTML = Math.round(elapsedTime).toFixed(0) + "ms";
+        }
+    }
+
+    function HandleMouseDown()
+    {
+        if (!inProgress && !hasWon)
+        {
+            startTime = window.performance.now();
+            inProgress = true;
+        }
+    }
+
+    function HandleMouseUp()
+    {
+        if (inProgress && !hasWon)
+        {
+            endTime = window.performance.now();
+            inProgress = false;
+
+            var elapsedTime = (endTime - startTime);
+            UpdateColoursBasedOnTime(elapsedTime, true);
+        }
+    }
+
+    function Update()
+    {
+        if (!inProgress)
+        {
+            return;
+        }
+
+        var currentTime = window.performance.now();
+        var elapsedTime = (currentTime - startTime);
+        UpdateColoursBasedOnTime(elapsedTime, false);
+    }
+
+    function HandleResize()
+    {
+        var tickHolder = document.getElementById("external_div");
+        tickHolder.innerHTML = "";
+
+        var numTicks = Math.round(document.body.clientWidth / 10.0);
+        for (var tIdx = 0; tIdx < numTicks; ++tIdx)
+        {
+            tickHolder.innerHTML += '<div class="tick_element"></div>';
+        }
+
+        var timeDOM = document.getElementById("time_div");
+        timeDOM.innerHTML = "Click on the page";
+    }
+
+    setInterval(Update, 10);
+</script>
+<style>
+    body { background-color: #202020; font-family: 'Courier New', Courier, monospace; font-weight: bold; }
+    #game { height: 100%; margin: auto; display: flex; flex-direction: column; justify-content: center;}
+    #external_div { width: auto; height: 100px; margin: 0px; padding: 15px 15px 5px 15px; background-color: whitesmoke; display: flex; align-items: center; justify-content: center; }
+    #time_div { width: auto; height: 40px; background-color: whitesmoke; display: flex; align-items: center; justify-content: center; }
+    .tick_element { width: 5px; height: 100px; background-color: #202020; color: whitesmoke; margin: auto; vertical-align: middle; }
+</style>
+</head>
+
+<body onmousedown="HandleMouseDown()" onmouseup="HandleMouseUp()" onresize="HandleResize()" onload="HandleResize()">
+    <div id="game">
+        <div id="external_div"></div>
+        <div id="time_div"></div>
+    </div>
+</body>
+</html>
