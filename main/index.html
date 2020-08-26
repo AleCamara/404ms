@@ -373,6 +373,14 @@
         }
     }
 
+    function HandleLoad()
+    {
+        HandleResize();
+
+        document.body.addEventListener("touchstart", HandleMouseDown, false);
+        document.body.addEventListener("touchend", HandleMouseUp, false);
+    }
+
     function HandleResize()
     {
         var tickHolder = document.getElementById("external_div");
@@ -402,7 +410,7 @@
 </style>
 </head>
 
-<body onmousedown="HandleMouseDown()" onmouseup="HandleMouseUp()" onresize="HandleResize()" onload="HandleResize()">
+<body onmousedown="HandleMouseDown()" onmouseup="HandleMouseUp()" onresize="HandleResize()" onload="HandleLoad()">
     <div id="game">
         <div id="external_div"></div>
         <div id="time_div"></div>
