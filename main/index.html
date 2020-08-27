@@ -379,6 +379,9 @@
     {
         HandleResize();
 
+        document.body.removeEventListener('touchstart', HandleMouseDown, false);
+        document.body.removeEventListener('touchend', HandleMouseUp, false);
+
         document.body.addEventListener("touchstart", HandleMouseDown, false);
         document.body.addEventListener("touchend", HandleMouseUp, false);
     }
