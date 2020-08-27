@@ -330,6 +330,7 @@
                 blackHole = document.getElementById("black_hole");
 
                 UpdateBlackHole();
+                UpdateEndingLetters();
 
                 endingStage = EndingStage.GrowBlackHole;
                 blackHoleStartTime = window.performance.now() * 1E-3;
@@ -346,6 +347,7 @@
 
                 CreateParticles(elapsedTimeSinceLastTimeS);
                 UpdateParticles(elapsedTimeSinceLastTimeS);
+                UpdateEndingLetters();
 
                 var elapsedTimeS = ((window.performance.now() * 1E-3) - blackHoleStartTime);
                 if (elapsedTimeS > blackHoleGrowPause)
