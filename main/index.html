@@ -13,6 +13,9 @@
 
     var hasWon = false;
 
+    var timeSinceTouchEnd = null;
+    const deadTimeAfterTouchEnd = 75.0;
+
     function Clamp(value, min, max)
     {
         return Math.min(max, Math.max(value, min))
@@ -60,8 +63,13 @@
     {
         if (!inProgress && !hasWon)
         {
-            startTime = window.performance.now();
-            inProgress = true;
+            const currentTime = window.performance.now();
+            const timeElapsedSinceTouchEnd = currentTime - timeSinceTouchEnd;
+            if (timeElapsedSinceTouchEnd > deadTimeAfterTouchEnd)
+            {
+                startTime = currentTime;
+                inProgress = true;
+            }
         }
     }
 
@@ -74,6 +82,8 @@
 
             var elapsedTime = (endTime - startTime);
             UpdateColoursBasedOnTime(elapsedTime, true);
+
+            timeSinceTouchEnd = endTime;
         }
     }
 
@@ -380,6 +390,8 @@
     function HandleLoad()
     {
         HandleResize();
+
+        timeSinceTouchEnd = window.performance.now();
 
         document.body.removeEventListener('touchstart', HandleMouseDown, false);
         document.body.removeEventListener('touchend', HandleMouseUp, false);
